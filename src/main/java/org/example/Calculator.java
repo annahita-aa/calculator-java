@@ -17,19 +17,22 @@ public class Calculator {
 
     public String calculateExpression(String expression){
 
-        String operatorPattern = "(?<=\\D)(?=\\d)|(?<=\\d)(?=\\D)";
-        String[] tokens = expression.split(operatorPattern);
 
-        int operand = 0;
+
+        String[] tokens = expression.split("(?<=\\d)(?=[^\\d.])|(?<=[^\\d.])(?=\\d)"); // Split by valid numbers and special characters
+
+
+
+        double operand = 0;
         String operator = "+";
 
         for (String token : tokens) {
-            if (token.matches("[0-9]+")) {
+            if (token.matches("[0-9.]+")) {
                 operand = recalculateOperand(token, operand, operator);
-            } else if (token.matches(".*[-+*/].*"))  {
+            } else if (token.matches("^[+*/-]$"))  {
                 operator = token;
             } else {
-                System.out.println("invalid input");
+                System.err.println("invalid operator: " +token);
                 System.exit(0);
             }
 
@@ -38,20 +41,28 @@ public class Calculator {
         return null;
     }
 
-    private static int recalculateOperand(String token, int operand, String operator) {
+    private static double recalculateOperand(String token, Double operand, String operator) {
 
-        if (operator.equals("+")) {
-            return operand + Integer.parseInt(token);
+
+
+        try {
+           double number = Double.parseDouble(token);
+            if (operator.equals("+")) {
+                return number = operand + number;
+            }
+            if (operator.equals("*")) {
+                return number = operand * number;
+            }
+            if (operator.equals("-")) {
+                return number = operand - number;
+            }
+            if (operator.equals("/")) {
+                return number = operand / number;
+            }
+        } catch (NumberFormatException e) {
+            System.err.println("this is not a valid number: "+ token);
+            System.err.println("this is your final calculated before input invalid number: ");
         }
-        if (operator.equals("*")) {
-            return operand * Integer.parseInt(token);
-        }
-        if (operator.equals("-")) {
-            return operand - Integer.parseInt(token);
-        }
-        if (operator.equals("/")) {
-            return operand / Integer.parseInt(token);
-        }
-        return Integer.MIN_VALUE;
+        return operand;
     }
 }
